@@ -1,0 +1,3745 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet API Documentation v1.0.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root[data-theme="light"] {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: rgba(79, 70, 229, 0.1);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --bg-dark: #1f2937;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border-color: #e5e7eb;
+            --border-color-dark: #d1d5db;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --gradient-from: #667eea;
+            --gradient-to: #764ba2;
+            --header-overlay: rgba(255, 255, 255, 0.1);
+            --toggle-bg: #e5e7eb;
+            --toggle-circle: #ffffff;
+            --toggle-icon: #6b7280;
+        }
+
+        :root[data-theme="dark"] {
+            --primary-color: #818cf8;
+            --primary-hover: #6366f1;
+            --primary-light: rgba(129, 140, 248, 0.1);
+            --success-color: #34d399;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --info-color: #60a5fa;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-dark: #0f172a;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border-color: #334155;
+            --border-color-dark: #475569;
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --gradient-from: #4c1d95;
+            --gradient-to: #5b21b6;
+            --header-overlay: rgba(255, 255, 255, 0.05);
+            --toggle-bg: #4b5563;
+            --toggle-circle: #1f2937;
+            --toggle-icon: #f3f4f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: var(--toggle-bg);
+            border-radius: 50px;
+            padding: 5px;
+            width: 70px;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-toggle-circle {
+            width: 25px;
+            height: 25px;
+            background: var(--toggle-circle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        [data-theme="dark"] .theme-toggle-circle {
+            transform: translateX(35px);
+        }
+
+        .theme-icon {
+            font-size: 14px;
+            color: var(--toggle-icon);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .version {
+            display: inline-block;
+            background: var(--header-overlay);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 10px;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-secondary);
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .nav-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Content */
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .info-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .info-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-card p {
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .info-card ol,
+        .info-card ul {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .info-card li {
+            margin-bottom: 10px;
+        }
+
+        .info-card strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .info-card code {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Endpoint Card */
+        .endpoint-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .endpoint-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+
+        .endpoint-header {
+            padding: 20px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .endpoint-header:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .endpoint-module {
+            background: var(--info-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 15px;
+        }
+
+        .endpoint-toggle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .endpoint-card.expanded .endpoint-toggle {
+            transform: rotate(180deg);
+        }
+
+        .endpoint-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .endpoint-card.expanded .endpoint-body {
+            max-height: 2500px;
+        }
+
+        .endpoint-content {
+            padding: 25px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-primary);
+        }
+
+        .param-table th {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .param-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .param-type {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            color: var(--primary-color);
+        }
+
+        .param-required {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            position: relative;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .code-block-title {
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .copy-btn {
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .copy-btn.copied {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        /* Response */
+        .response-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .response-status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* Utilities */
+        .text-muted {
+            color: var(--text-secondary);
+        }
+
+        .mt-4 {
+            margin-top: 2rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 30px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .param-table {
+                font-size: 0.85rem;
+            }
+
+            .param-table th,
+            .param-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <div class="theme-toggle-circle">
+            <span class="theme-icon" id="theme-icon">🌙</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>
+                    Wallet API Documentation
+                    <span class="version">v1.0.0</span>
+                </h1>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('introduction')">Introduction</button>
+            <button class="nav-btn" onclick="showSection('getting-started')">Getting Started</button>
+            <button class="nav-btn" onclick="showSection('authentication')">Authentication</button>
+            <button class="nav-btn" onclick="showSection('endpoints')">API Operations</button>
+            <button class="nav-btn" onclick="showSection('examples')">Examples</button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Introduction Section -->
+            <section id="introduction" class="section active">
+                <h2 class="section-title">Introduction</h2>
+                <div class="info-card">
+                    <p>Welcome to the Wallet API documentation! This comprehensive guide provides developers with all
+                        the necessary information to seamlessly integrate our API into their applications.</p>
+                    <p>Our API uses a unique single-endpoint architecture where all requests are sent to the same URL,
+                        and the <code>module</code> parameter determines which operation is performed.</p>
+                    <h3>Key Features</h3>
+                    <ul>
+                        <li>🔄 Single endpoint for all operations</li>
+                        <li>🎯 Module-based routing system</li>
+                        <li>🔒 Secure authentication with accessId and accessToken</li>
+                        <li>💳 Complete wallet management functionality</li>
+                        <li>🎮 Game provider integration</li>
+                        <li>📊 Transaction history and reporting</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Getting Started Section -->
+            <section id="getting-started" class="section">
+                <h2 class="section-title">Getting Started</h2>
+                <div class="info-card">
+                    <h3>Quick Start Guide</h3>
+                    <ol>
+                        <li>
+                            <strong>Generate your credentials:</strong>
+                            <p>Navigate to the Wallet backoffice <strong>Manage API</strong> page to generate your
+                                unique <code>accessId</code> and <code>accessToken</code>.</p>
+                        </li>
+                        <li>
+                            <strong>Set up authentication:</strong>
+                            <p>Include your credentials in every API request body.</p>
+                        </li>
+                        <li>
+                            <strong>Make your first request:</strong>
+                            <p>Send a POST request to <code>/api/v1/index.php</code> with the appropriate module
+                                parameter.</p>
+                        </li>
+                        <li>
+                            <strong>Test in development:</strong>
+                            <p>Test your integration thoroughly in a development environment before moving to
+                                production.</p>
+                        </li>
+                        <li>
+                            <strong>Launch your application:</strong>
+                            <p>Monitor your application's performance and API usage.</p>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Authentication Section -->
+            <section id="authentication" class="section">
+                <h2 class="section-title">Authentication</h2>
+                <div class="info-card">
+                    <h3>Authentication Requirements</h3>
+                    <p>All API requests require authentication using two credentials:</p>
+                    <ul>
+                        <li><strong>accessId:</strong> Your unique identifier (integer)</li>
+                        <li><strong>accessToken:</strong> Your secure access token (string)</li>
+                    </ul>
+                    <p>These credentials must be included in the request body of every API call.</p>
+
+                    <h3>Example Authentication</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-title">Request Body</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre>{
+    "accessId": 12345,
+    "accessToken": "your-secure-token-here",
+    "module": "/users/getUserDetail",
+    // ... other parameters
+}</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Endpoints Section -->
+            <section id="endpoints" class="section">
+                <h2 class="section-title">API Operations</h2>
+                <div class="info-card">
+                    <p>All operations use the same endpoint with different module parameters:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-title">Base URL</span>
+                        </div>
+                        <pre>POST https://your-domain.com/api/v1/index.php</pre>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <p>if possible, please add a merchantId param with your external API user merchantId to all API call</p>
+                </div>
+
+                <!-- Manual Ang Pao -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/users/manualAngPao</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Perform manual Ang Pao (red packet) distribution to users.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/users/manualAngPao"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Target user ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">amount</span></td>
+                                        <td><span class="param-type">float</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Amount to distribute (must include decimals, e.g., 10.00)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">promotionId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Associated promotion ID</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/users/manualAngPao" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "userId=19011169123" \
+  -F "amount=10.00" \
+  -F "promotionId=65433"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Successful operation response</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": null,
+    "timestamp": "2025-09-08T09:37:10+00:00"
+}
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get Manual Ang Pao Amount -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/users/getManualAngpaoAmount</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve the manual Ang Pao amount for a user.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/users/getManualAngpaoAmount"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Target user ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">promotionId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Associated promotion ID</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+    -H "Content-Type: multipart/form-data" \
+    -F "module=/users/getManualAngpaoAmount" \
+    -F "accessId=12345" \
+    -F "accessToken=your-token-here" \
+    -F "userId=123" \
+    -F "promotionId=123" \
+</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the manual Ang Pao amount</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": 0,
+    "timestamp": "2025-09-08T09:37:10+00:00"
+}
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get All Transactions -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/transactions/getAllTransactions</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve all transactions for the merchant.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/transactions/getAllTransactions"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">pageIndex</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Number of Page</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">sDate</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Transaction Start Date Time</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">eDate</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Transaction End Date Time</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Target user ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">id</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Target Transaction ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">type</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: DEPOSIT, WITHDRAW, BONUS</td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">status</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: PENDING, COMPLETED, REJECTED</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/users/getAllTransaction" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "userId=123" \
+  -F "id=123" \
+  -F "type=DEPOSIT" \
+  -F "pageIndex=0" \
+  -F "sDate=2021-02-22T00:00:00Z" \
+  -F "eDate=2021-02-22T00:00:00Z"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns all transactions for the merchant</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "transactions": [
+            {
+                "id": "1",
+                "merchantId": "5",
+                "adminId": "12",
+                "type": "DEPOSIT",
+                "details": "{\"method\":\"Manual\",\"bank\":\"CITIUS\",\"amount\":1}",
+                "cash": "1.00",
+                "createdDateTime": "2025-09-08T00:19:03+00:00",
+                "processedDateTime": "2025-09-08T00:19:03+00:00",
+                "endDateTime": "2025-09-08T00:19:03+00:00",
+                "status": "COMPLETED",
+                "bankId": "1",
+                "bank": {
+                    "id": "1",
+                    ...
+                },
+                "user": {
+                    "id": "1",
+                    ...
+                }
+            }
+        ],
+        "totalDeposit": 0,
+        "netDeposit": 0,
+        "totalCount": "1",
+        "totalAmount": "00.00",
+        "totalPage": 1
+    },
+    "timestamp": "2025-09-08T08:26:59+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Register User -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/member/register</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Register a new user in the system.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/member/register"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">username</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your system Unqiue Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">name</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your new user name</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">referrerCode</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>ReferrerCode for this User</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">password</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your New User Authentication Key</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=register" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "username=123456" \
+  -F "password=securepassword"
+  -F "name=newuser123" \
+  -F "referrerCode=newuser123"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the newly created user details</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "id": 123
+    },
+    "timestamp": "2025-09-08T10:15:14+00:00"
+}
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get User Detail -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/users/getAllUsers</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve detailed information about a user.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/users/getAllUsers"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">id</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Target User Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">name</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Target User Name or Username</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">mobile</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Target User Mobile</td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">agent</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Return User Downline Target Username</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">bank</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Bank Account Number</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">status</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: ACTIVE, INACTIVE</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">pageIndex</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Number of Page</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">sortBy</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: register, login</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">sortType</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: ASC, DESC</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">includeBetInfo</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Get User Min withdraw and total bet</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">includeTXSummary</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Get User Deposit, Withdraw, Win loss</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=getUserDetail" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "id=19011169123" \
+  -F "name=test" \
+  -F "bank=19011169123" \
+  -F "mobile=01901123" \
+  -F "bank=19011169123" \
+  -F "status=ACTIVE" \
+  -F "pageIndex=0" \
+  -F "sortBy=register" \
+  -F "sortType=ASC" \
+  -F "includeBetInfo=1"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns user details including balance, status, and profile
+                                    information</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "users": [
+            {
+                "id": "1",
+                "username": "1",
+                "name": "1",
+                "cash": "0.00",
+                "referrerId": "123",
+                ...
+            }
+            ...
+        ],
+        "totalPage": 1
+    },
+    "timestamp": "2025-09-08T08:17:16+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfer -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/member/setScore</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Transfer credits between users.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/member/setScore"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">username</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Target Username</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">amount</span></td>
+                                        <td><span class="param-type">float</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Amount Postive = Deposit, Negtive = Withdraw</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=transfer" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "username=19011169123" \
+  -F "amount=50.00"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns transfer confirmation and updated balances</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "transactionId": "138"
+    },
+    "timestamp": "2025-09-08T10:12:12+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get Game Provider List -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/games/getGameCategory</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve the list of available game providers.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/games/getGameCategory"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">type</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: SLOT, LIVE, SPORTSBOOK, 4D, OTHER</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/games/getGameCategory" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns list of available game providers</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": [
+        {
+            "type": "SLOT",
+            "name": "SLOT GAME",
+            "sites": [
+                {
+                    "site": "test",
+                    "productId": "1",
+                    "name": "test",
+                    "image": "",
+                    "hasGameList": false
+                }
+            ]
+        },
+        {
+            "type": "LIVE",
+            "name": "LIVE CASINO",
+            "sites": [...]
+        },
+        {
+            "type": "SPORTSBOOK",
+            "name": "SPORTSBOOK",
+            "sites": [...]
+        },
+        {
+            "type": "4D",
+            "name": "4D",
+            "sites": [...]
+        },
+        {
+            "type": "OTHER",
+            "name": "OTHER",
+            "sites": [...]
+        }
+    ],
+    "timestamp": "2025-10-30T08:08:14+00:00"
+}</pre>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List Games -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/games/getGameList</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Get a list of available games.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/games/getGameList"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">site</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>target Game Site</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">product</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>target Game Product</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/games/getGameList" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "product=0" \
+  -F "site=test"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns list of available games</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": [
+        {
+            "GameType": "SLOT",
+            "GameName": "Crash X",
+            "GameCode": "crash",
+            "GameImageUrl": ""
+        }
+    ],
+    "timestamp": "2025-09-08T10:50:46+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Launch Game -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/users/getGameURL</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Launch a game for a user.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/users/getGameURL"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">username</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target Username</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">site</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your target Site</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">product</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your target Product</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">game</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your target Game</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/users/getGameURL" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "username=19011169123" \
+  -F "game=test" \
+  -F "product=test" \
+  -F "site=test"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns game launch URL and session information</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get Bet History -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/transactions/getBetHistory</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve betting history for users.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/transactions/getBetHistory"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">int</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Target UserId</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">sTime</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Bet History Start Date Time</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">eTime</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Bet History End Date Time</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">pageIndex</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Number of Page</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=getBetHistory" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "userId=19011169123" \
+  -F "sTime=2021-02-22T00:00:00Z" \
+  -F "eTime=2021-02-22T00:00:00Z" \
+  -F "pageIndex=0"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns betting history with details of each bet</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "history": [],
+        "totalRecords": "0",
+        "totalPages": 0,
+        "currentPage": 0,
+        "pageSize": 10,
+        "stats": {
+            "totalRound": "0",
+            "totalAmount": null,
+            "totalResult": null
+        }
+    },
+    "timestamp": "2025-09-08T10:18:58+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decrypt Data -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/tool/decryptDataToPlainText</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Decrypt encrypted data to plain text.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/tool/decryptDataToPlainText"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">data</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your data for Decrypt</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=decryptDataToPlainText" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "data=base64_encrypted_string_here"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the decrypted plain text data</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": "12343",
+    "timestamp": "2025-09-08T10:11:12+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Update User Tag -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/users/updateUserTag</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Update user tag values. Empty value will remove the tag.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/users/updateUserTag"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Target user ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userTag</span></td>
+                                        <td><span class="param-type">json string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>JSON object of tag name and tag value</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+                -H "Content-Type: multipart/form-data" \
+                -F "module=/users/updateUserTag" \
+                -F "accessId=12345" \
+                -F "accessToken=your-token-here" \
+                -F "userId=123" \
+                -F 'userTag={"VIP":"Gold","LEVEL":"A"}'</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": null,
+    "timestamp": "2026-06-16T00:00:00+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Get Latest 4D Result -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/lucky/getLatest4DResult</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve the latest 4D result.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/lucky/getLatest4DResult"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">date</span></td>
+                                        <td><span class="param-type">start date (default 3 months ago)</span></td>
+                                        <td><span class="param-required">Optional</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+                -H "Content-Type: multipart/form-data" \
+                -F "module=/lucky/getLatest4DResult" \
+                -F "accessId=12345" \
+                -F "accessToken=your-token-here"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>
+    {
+        "status": "SUCCESS",
+        "data": {
+            "MG": [
+                {
+                    "date": "2026-06-28",
+                    "result": {
+                        "p1": "3743",
+                        "p2": "1773",
+                        "p3": "2749",
+                        "s1": "5670",
+                        "s2": "8228",
+                        "s3": "----",
+                        "s4": "1226",
+                        "s5": "----",
+                        "s6": "9887",
+                        "s7": "2676",
+                        "s8": "1214",
+                        "s9": "4714",
+                        "s10": "6622",
+                        "c1": "4702",
+                        "c2": "1053",
+                        "c3": "4634",
+                        "c4": "5458",
+                        "c5": "5769",
+                        "c6": "1427",
+                        "c7": "2377",
+                        "c8": "1105",
+                        "c9": "2120",
+                        "c10": "1039",
+                        "s11": "----",
+                        "s12": "2403",
+                        "s13": "5782"
+                    }
+                },
+                {
+                    "date": "2026-06-27",
+                    "result": {
+                        "p1": "0038",
+                        "p2": "9200",
+                        "p3": "8971",
+                        "s1": "7964",
+                        "s2": "6931",
+                        "s3": "0207",
+                        "s4": "6946",
+                        "s5": "6411",
+                        "s6": "6393",
+                        "s7": "1172",
+                        "s8": "5044",
+                        "s9": "6989",
+                        "s10": "4818",
+                        "c1": "4643",
+                        "c2": "9855",
+                        "c3": "8249",
+                        "c4": "2661",
+                        "c5": "7251",
+                        "c6": "2850",
+                        "c7": "5184",
+                        "c8": "5516",
+                        "c9": "5095",
+                        "c10": "4615"
+                    }
+                },
+        "timestamp": "2026-06-28T17:21:39+00:00"
+    }
+}
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- daily total bet report -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/reports/dailyBetTotal</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Retrieve daily total bet per day</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/reports/dailyBetTotal"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">date</span></td>
+                                        <td><span class="param-type">date</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Date in Y-m-d format</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">user ID</span></td>
+                                        <td><span class="param-required">Optional</span></td>
+                                        <td>user id</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+                -H "Content-Type: multipart/form-data" \
+                -F "module=/reports/dailyBetTotal" \
+                -F "accessId=12345" \
+                -F "accessToken=your-token-here" \
+                -F "date=2026-07-01"
+            </pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+<pre>
+{
+    "status": "SUCCESS",
+    "data": {
+        "3699": {
+            "FASTSPIN": {
+                "bet": "519.20",
+                "winlose": "112.12"
+            },
+            "total": {
+                "bet": 742.1500000000001,
+                "winlose": 116.98
+            },
+            "YBG": {
+                "bet": "222.95",
+                "winlose": "4.86"
+            }
+        }
+    },
+    "timestamp": "2026-07-08T19:54:18+00:00"
+}
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Get Promotion List -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/users/getPromotionList</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Get Promotion List.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/users/getPromotionList"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId / conversationId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target UserId Or ConversationId</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/users/getPromotionList" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "userId=123"</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the Promotion List</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": [
+        {
+            "id": "1",
+            "name": "promotion name",
+            "description": "{\"Description\":\"\",\"DescQuillEditor\":{\"ops\":[{\"attributes\":{\"list\":\"bullet\"},\"insert\":\"\\n\"}]},\"DescQuillHTML\":\"\"}",
+            "amount": "",
+            "message": ""
+        },
+    ],
+    "timestamp": "2025-09-08T10:50:46+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Get Leaderboard -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/merchants/getLeaderboard</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">GET User Leaderboard.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/merchants/getLeaderboard"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">key</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Leaderboard Key</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">date</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Leaderboard Date</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+  -H "Content-Type: multipart/form-data" \
+  -F "module=/merchants/getLeaderboard" \
+  -F "accessId=12345" \
+  -F "accessToken=your-token-here" \
+  -F "key=SITE^ALL" \
+  -F "date=2025-11-14" </pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the Leaderboard</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre> {
+    "status": "SUCCESS",
+    "data": [
+        {
+            "user": {
+                "id": "1"
+            },
+            "mobile": "60******123",
+            "value": "1",
+            "data": "{\"site\":\"MEGA888\",\"bet\":1,\"win\":1}"
+        }
+    ],
+    "timestamp": "2025-11-14T09:46:07+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Get Downline -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/referrer/getDownline</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">GET User Downline.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/referrer/getDownline"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">level</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>DownLine Level 1 or Level 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target UserId</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">pageIndex</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Number of Page</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                               <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+    -H "Content-Type: multipart/form-data" \
+    -F "module=/referrer/getDownline" \
+    -F "accessId=12345" \
+    -F "accessToken=your-token-here" \
+    -F "level=1" \
+    -F "userId=123" \
+    -F "pageIndex=0" </pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the Downline</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "downlines": [
+            {
+                "id": "1",
+                "name": "TTTest",
+                "registerDateTime": "2021-04-14T07:37:11+00:00"
+            },
+            {
+                "id": "2",
+                "name": "TTTest1",
+                "registerDateTime": "2021-04-14T10:32:42+00:00"
+            },
+
+        ],
+        "totalPage": 3
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <!-- check Gateway Order -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/paymentGateway/checkGatewayOrder</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Check gateway order within 5 minutes of the datetime passed.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/paymentGateway/checkGatewayOrder"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId / conversationId</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td></td>
+                                        <td>Your target UserId or ConversationId</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">gateway</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target Payment Gateway Name in ALL CAPS </td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">dateTime</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target Payment Gateway Date Time</td>
+                                    </tr>
+                                      <tr>
+                                        <td><span class="param-name">amount</span></td>
+                                        <td><span class="param-type">float</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Amount to distribute (must include decimals, e.g., 10.00)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">conversationId</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your Ai Chat ConverSation Id</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                               <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+    -H "Content-Type: multipart/form-data" \
+    -F "module=/paymentGateway/checkGatewayOrder" \
+    -F "accessId=12345" \
+    -F "accessToken=your-token-here" \
+    -F "userId=123" \
+    -F "gateway=ttestpay" \
+    -F "dateTime=2021-02-22T00:00:00Z" \
+    -F "amount=1.00" \
+    -F "conversationId=123" </pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the Downline</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "message": "PG order success, update deposit amount to player / no order found in PG / no order found"
+    },
+    "timestamp": "2026-03-04T05:05:52+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Create Pending Transaction -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/transactions/insert</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">Create Pending Transaction.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/transactions/insert"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Target UserId</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">bank</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target bank Name </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">bankAccountNumber</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your target User Bank Account Number</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">mBankAccountNumber</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target Merchant Bank Account Number</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">method</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your target Transaction Method (External supports DEPOSIT only)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">amount</span></td>
+                                        <td><span class="param-type">float</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Amount to distribute</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">datetime</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Your target Transaction Date Time</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">slip</span></td>
+                                        <td><span class="param-type">binary</span></td>
+                                        <td></td>
+                                        <td>Your target Transaction Slip</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">skipSlip</span></td>
+                                        <td><span class="param-type">binary</span></td>
+                                        <td></td>
+                                        <td>set to true if no slip required</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                               <pre>curl --location 'https://ahw.u55y38.com/api/v1/index.php' \
+--form 'module="/transactions/insert"' \
+--form 'type="DEPOSIT"' \
+--form 'bank="MBB"' \
+--form 'mBankAccountNumber="8888888"' \
+--form 'method=" Manual"' \
+--form 'amount=" 30"' \
+--form 'datetime="2026-03-18 14:12:00"' \
+--form 'accessId="123"' \
+--form 'accessToken="123"' \
+--form 'userId="123"' \
+--form 'slip=@"/C:/1.png"'</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the Downline</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "message": "null"
+    },
+    "timestamp": "2026-03-04T05:05:52+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- getBank -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/banks/getBank</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">getBank.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/banks/getBank"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">status</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td></td>
+                                        <td>Enum: ACTIVE, INACTIVE</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">includeBalance</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Get Balance</td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">includeGatewayBalance</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Get Gateway Balance</td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">includeBankUsername</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Get Bank Username</td>
+                                    </tr>
+                                     <tr>
+                                        <td><span class="param-name">includeHideUntil</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td></td>
+                                        <td>Get Hide Untill</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                               <pre>curl --location 'https://ahw.u55y38.com/api/v1/index.php' \
+--form 'module="/banks/getBank"' \
+--form 'status="ACTIVE"' \
+--form 'includeBalance="1"' \
+--form 'includeGatewayBalance="1"' \
+--form 'includeBankUsername="1"' \
+--form 'includeHideUntil="1"'</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the Downline</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": [
+        {
+            "id": "1",
+            "merchantId": "1",
+            "code": "TNG",
+            "name": "Touch 'n Go (DUIT NOW)",
+            "currency": "MYR",
+            "accountName": "QR Wallet SDN BHD",
+            "accountNumber": "99999997",
+            "description": null,
+            "QRImageURL": "https://www.google.com/",
+            "bankType": "0",
+            "gateway": "BBBBB",
+            "config": "{\"copyExcel\":\"0\",\"transferorName\":\"1\"}",
+            "status": "ACTIVE",
+            "displayGateway": "BBBBB",
+            "displayOrder": "5",
+            "remark": null,
+            "gatewayBalance": null,
+            "gatewayBalanceDateTime": null,
+            "gatewayStatus": null,
+            "gatewayCode": null,
+            "username": null,
+            "password": null,
+            "securityAnswer": null,
+            "balance": "1.85"
+        }
+    ],
+    "timestamp": "2026-05-09T05:56:29+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Insert / Update Bank -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/banks/insertUpdate</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">
+                                Create a new bank account or update an existing bank account for the merchant.
+                            </p>
+
+                            <h4>Request Parameters</h4>
+
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/banks/insertUpdate"</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant ID</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">id</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>0 = Insert, Existing Bank ID = Update</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">code</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Bank code (Example: CIMB)</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">accountName</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Bank account holder name</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">accountNumber</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Bank account number</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">bankType</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Bank type identifier</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span class="param-name">status</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Enum: ACTIVE, INACTIVE</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+
+                <pre>curl -X POST https://your-domain.com/api/v1/index.php \
+                -H "Content-Type: multipart/form-data" \
+                -F "module=/banks/insertUpdate" \
+                -F "merchantId=2" \
+                -F "accessId=11" \
+                -F "accessToken=your-access-token" \
+                -F "id=0" \
+                -F "code=CIMB" \
+                -F "accountName=John Doe" \
+                -F "accountNumber=785612" \
+                -F "bankType=1" \
+                -F "status=ACTIVE"</pre>
+
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+
+                                <span class="response-status">200 OK</span>
+
+                                <p class="text-muted">
+                                    Bank account inserted or updated successfully.
+                                </p>
+
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Response Example</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+
+                <pre>{
+                    "status": "SUCCESS",
+                    "data": null,
+                    "timestamp": "2026-06-29T13:28:56+00:00"
+                }</pre>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- getBank -->
+                 <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/chat/getMessage</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">getMessage.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/chat/getMessage"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Target UserId</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                               <pre>curl --location 'https://ahw.u55y38.com/api/v1/index.php' \
+--form 'module="/chat/getMessage"' \
+--form "accessId=12345" \
+--form "accessToken=your-token-here" \
+--form 'userId=123' \</pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the getMessage</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": {
+        "messages": [
+            {
+                "id": "3921121142",
+                "source": "LIVECHAT",
+                "status": null,
+                "message": "gfdk",
+                "createdDateTime": "2026-06-11T04:43:27+00:00",
+                "admin": {
+                    "id": "280715072",
+                    "merchantId": "5",
+                    "originalName": "IT-SUPPORT-5-2009",
+                    "name": "IT-SUPPORT-5-2009"
+                }
+            }
+        ],
+        "user": {
+            "id": "405570806",
+            "merchantId": "5",
+            "originalName": "Ali",
+            "name": "Ali"
+        }
+    },
+    "timestamp": "2026-06-11T04:51:45+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- chat/send -->
+                 <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                        <div>
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/v1/index.php</span>
+                            <span class="endpoint-module">/chat/send</span>
+                        </div>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="endpoint-content">
+                            <p class="text-muted">send.</p>
+
+                            <h4>Request Parameters</h4>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">module</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Must be "/chat/send"</td>
+                                    </tr>
+                                   <tr>
+                                        <td><span class="param-name">merchantId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Merchant Id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessId</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">accessToken</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your API access token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">userId</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>Your Target UserId</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">message</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td><span class="param-required">Required</span></td>
+                                        <td>The Message want to send </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-block">
+                                <div class="code-block-header">
+                                    <span class="code-block-title">Request</span>
+                                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                </div>
+                               <pre>curl --location 'https://ahw.u55y38.com/api/v1/index.php' \
+--form 'module="/chat/send"' \
+--form "accessId=12345" \
+--form "accessToken=your-token-here" \
+--form 'userId=123' \
+--form "message='test'" </pre>
+                            </div>
+
+                            <div class="response-section">
+                                <h4>Response</h4>
+                                <span class="response-status">200 OK</span>
+                                <p class="text-muted">Returns the send chat</p>
+                                <div class="code-block">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Request</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre>{
+    "status": "SUCCESS",
+    "data": null,
+    "timestamp": "2026-06-11T04:43:22+00:00"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Examples Section -->
+            <section id="examples" class="section">
+                <h2 class="section-title">Code Examples</h2>
+
+                <div class="info-card">
+                    <h3>JavaScript/Node.js Example</h3>
+                    <p>Here's how to integrate the Wallet API using JavaScript:</p>
+
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-title">API Client Class</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre>class WalletAPIClient {
+    constructor(baseURL, accessId, accessToken) {
+        this.baseURL = baseURL;
+        this.endpoint = '/api/v1/index.php';
+        this.accessId = accessId;
+        this.accessToken = accessToken;
+    }
+
+    async request(module, additionalData = {}) {
+        const url = `${this.baseURL}${this.endpoint}`;
+        
+        const formData = new FormData();
+        formData.append('module', module);
+        formData.append('accessId', this.accessId);
+        formData.append('accessToken', this.accessToken);
+        
+        // Add additional parameters
+        Object.keys(additionalData).forEach(key => {
+            formData.append(key, additionalData[key]);
+        });
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('API request failed:', error);
+            throw error;
+        }
+    }
+
+    // Convenience methods for each module
+    async manualAngPao(userId, amount, promotionId) {
+        return this.request('/users/manualAngPao', {
+            userId,
+            amount,
+            promotionId
+        });
+    }
+
+    async getUserDetail(userId) {
+        return this.request('getUserDetail', { userId });
+    }
+
+    async transfer(fromUserId, toUserId, amount) {
+        return this.request('transfer', {
+            fromUserId,
+            toUserId,
+            amount
+        });
+    }
+
+    async launchGame(userId, gameId) {
+        return this.request('launchGame', {
+            userId,
+            gameId
+        });
+    }
+}</pre>
+                    </div>
+
+                    <h3>Usage Example</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-title">Implementation</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre>// Initialize the client
+const client = new WalletAPIClient(
+    'https://your-domain.com',
+    12345,           // Your accessId
+    'your-token-here' // Your accessToken
+);
+
+// Example: Send manual Ang Pao
+async function sendAngPao() {
+    try {
+        const result = await client.manualAngPao(
+            19011169123,  // userId
+            10.00,        // amount (with decimals)
+            65433         // promotionId
+        );
+        console.log('Ang Pao sent successfully:', result);
+    } catch (error) {
+        console.error('Failed to send Ang Pao:', error);
+    }
+}
+
+// Example: Get user details
+async function fetchUserDetails() {
+    try {
+        const user = await client.getUserDetail(19011169123);
+        console.log('User details:', user);
+    } catch (error) {
+        console.error('Failed to fetch user details:', error);
+    }
+}
+
+// Execute examples
+sendAngPao();
+fetchUserDetails();</pre>
+                    </div>
+
+                    <h3>Python Example</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-title">Python Implementation</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre>import requests
+import json
+
+class WalletAPIClient:
+    def __init__(self, base_url, access_id, access_token):
+        self.base_url = base_url
+        self.endpoint = '/api/v1/index.php'
+        self.access_id = access_id
+        self.access_token = access_token
+        
+    def request(self, module, additional_data=None):
+        url = f"{self.base_url}{self.endpoint}"
+        
+        data = {
+            'module': module,
+            'accessId': self.access_id,
+            'accessToken': self.access_token
+        }
+        
+        if additional_data:
+            data.update(additional_data)
+            
+        response = requests.post(url, data=data)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise Exception(f"API request failed: {response.status_code}")
+    
+    def manual_ang_pao(self, user_id, amount, promotion_id):
+        return self.request('/users/manualAngPao', {
+            'userId': user_id,
+            'amount': amount,
+            'promotionId': promotion_id
+        })
+
+# Usage
+client = WalletAPIClient(
+    'https://your-domain.com',
+    12345,
+    'your-token-here'
+)
+
+# Send Ang Pao
+result = client.manual_ang_pao(19011169123, 10.00, 65433)
+print(result)</pre>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 Wallet API Documentation. All rights reserved.</p>
+            <p>Need help? Contact Support</p>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        function getTheme() {
+            return localStorage.getItem('theme') || 'light';
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            icon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
+        function toggleTheme() {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+
+        // Show/hide sections
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Toggle endpoint details
+        function toggleEndpoint(header) {
+            const card = header.parentElement;
+            card.classList.toggle('expanded');
+        }
+
+        // Copy code to clipboard
+        function copyCode(button) {
+            const codeBlock = button.parentElement.nextElementSibling;
+            const code = codeBlock.textContent;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code:', err);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial theme
+            setTheme(getTheme());
+
+            // Add smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
