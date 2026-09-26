@@ -26,11 +26,16 @@ def load_tokens() -> dict[str, str]:
     return {str(item["name"]): str(item["token"]) for item in data}
 
 
-def fetch_brand(brand: dict, token: str, day: str) -> tuple[list[dict], str]:
+LIVE_STATUSES = ("PENDING", "COMPLETED", "REJECTED")
+
+
+def fetch_brand(brand: dict, token: str, day: str, status: str = "COMPLETED", max_pages: int = 40) -> tuple[list[dict], str, int]:
+    """Return rows, error text, and the API totalCount. Empty error means the body was SUCCESS."""
     url = brand["domain"].rstrip("/") + "/api/v1/index.php"
     rows: list[dict] = []
+    total = 0
     page = 0
-    while page < 40:
+    while page < max_pages:
         response = requests.post(
             url,
             data={
@@ -39,27 +44,26 @@ def fetch_brand(brand: dict, token: str, day: str) -> tuple[list[dict], str]:
                 "accessToken": token,
                 "merchantId": brand["merchant_id"],
                 "pageIndex": str(page),
-                "status": "COMPLETED",
+                "status": status,
                 "sDate": f"{day} 00:00:00",
                 "eDate": f"{day} 23:59:59",
             },
-            timeout=25,
+            timeout=20,
         )
         body = response.json()
         if str(body.get("status") or "") != "SUCCESS":
-            message = ""
-            data = body.get("data")
-            if isinstance(data, dict):
-                message = str(data.get("message") or "")
-            return rows, message or "The brand API refused the request"
+            data = body.get("data") if isinstance(body.get("data"), dict) else {}
+            message = str(data.get("message") or "") or "The brand API refused the request"
+            return rows, message, total
         data = body.get("data") if isinstance(body.get("data"), dict) else {}
+        total = int(data.get("totalCount") or 0)
         batch = data.get("transactions") if isinstance(data.get("transactions"), list) else []
         rows.extend(item for item in batch if isinstance(item, dict))
         total_page = int(data.get("totalPage") or 1)
         if not batch or page + 1 >= total_page:
             break
         page += 1
-    return rows, ""
+    return rows, "", total
 
 
 def display_rows(raw_rows: list[dict], brand_name: str) -> list[dict[str, str]]:
@@ -68,9 +72,7 @@ def display_rows(raw_rows: list[dict], brand_name: str) -> list[dict[str, str]]:
         user = raw.get("user") if isinstance(raw.get("user"), dict) else {}
         bank = _bank(user.get("bank"))
         tags = _TAG_RE.findall(str(user.get("name") or ""))
-        brand = brand_name
-        if tags:
-            brand = brand_name + " · " + ", ".join(tags)
+        extra = ", ".join(tags)
         shown.append(
             {
                 "time": _clock(raw.get("createdDateTime")),
@@ -87,11 +89,11 @@ def display_rows(raw_rows: list[dict], brand_name: str) -> list[dict[str, str]]:
                 "pay_id": bank.get("payID", ""),
                 "bank_lock": str(bank.get("bankLock") or ""),
                 "method": _method(raw),
-                "brand": brand,
+                "brand": brand_name,
                 "created": _clock(raw.get("createdDateTime")),
                 "processed": _clock(raw.get("processedDateTime")),
                 "status": str(raw.get("status") or ""),
-                "detail": _detail(raw),
+                "detail": " · ".join(part for part in (extra, _detail(raw)) if part),
             }
         )
     return shown
